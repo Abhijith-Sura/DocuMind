@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: documind-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    disk:
+      name: documind-storage
+      mountPath: /app/chroma_db
+      sizeGB: 1
+    envVars:
+      - key: APP_NAME
+        value: DocuMind AI
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CHROMA_PERSIST_DIR
+        value: /app/chroma_db
+      - key: UPLOAD_DIR
+        value: /app/uploads
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false

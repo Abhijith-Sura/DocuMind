@@ -1,0 +1,50 @@
+# DocuMind AI — Minimal Requirements
+# Stripped down to ONLY packages with Python 3.14 pre-built wheels
+# Install with: pip install --prefer-binary -r requirements-simple.txt
+
+# ── Web Framework ──────────────────────────────────────────────
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+python-multipart>=0.0.9
+
+# ── Database (SQLite, zero setup) ─────────────────────────────
+sqlalchemy>=2.0.0
+aiosqlite>=0.20.0
+
+# ── Auth (pure Python) ────────────────────────────────────────
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# ── Document Parsing (pure Python, no compiler) ───────────────
+pypdf>=5.0.0
+python-docx>=1.1.0
+
+# ── Embeddings ────────────────────────────────────────────────
+# torch: grab CPU-only (smaller, faster to install)
+torch>=2.5.0
+sentence-transformers>=3.3.0
+
+# ── Vector DB ─────────────────────────────────────────────────
+# chromadb 0.6+ uses pre-built hnswlib wheels
+chromadb>=0.6.0
+
+# ── LangChain (text splitting only, pure Python) ─────────────
+langchain-text-splitters>=0.3.0
+
+# ── Search (pure Python) ──────────────────────────────────────
+rank-bm25>=0.2.2
+
+# ── Google AI (new SDK)
+google-genai>=1.0.0
+
+# ── MLflow (experiment tracking) ──────────────────────────────
+mlflow>=2.18.0
+
+# ── Utils ─────────────────────────────────────────────────────
+python-dotenv>=1.0.0
+pydantic-settings>=2.0.0
+httpx>=0.27.0
+aiofiles>=23.2.0
+
+# NOTE: RAGAS removed temporarily (scikit-network needs Visual C++)
+# Will be added back when running via Docker (has all compilers built in)
