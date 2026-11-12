@@ -10,10 +10,10 @@ import { getApiError } from "@/lib/apiError";
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const statusConfig: Record<string, any> = {
-  ready: { label: "Ready", icon: <CheckCircle size={13} />, cls: "status-ready" },
-  processing: { label: "Processing", icon: <Loader size={13} className="spin" />, cls: "status-processing" },
-  uploaded: { label: "Queued", icon: <Clock size={13} />, cls: "status-uploaded" },
-  failed: { label: "Failed", icon: <AlertCircle size={13} />, cls: "status-failed" },
+  ready: { label: "Ready", icon: <CheckCircle size={13} />, cls: "badge-ok" },
+  processing: { label: "Processing", icon: <Loader size={13} className="spin-fast" />, cls: "badge-idle" },
+  uploaded: { label: "Queued", icon: <Clock size={13} />, cls: "badge-warn" },
+  failed: { label: "Failed", icon: <AlertCircle size={13} />, cls: "badge-err" },
 };
 
 export default function DocumentsPage() {
@@ -88,25 +88,25 @@ export default function DocumentsPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
         <div>
           <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 6 }}>Documents</h1>
-          <p style={{ color: "#9090aa", fontSize: 14 }}>{documents.length} document{documents.length !== 1 ? "s" : ""} in your library</p>
+          <p style={{ color: "var(--text-muted)", fontSize: 14 }}>{documents.length} document{documents.length !== 1 ? "s" : ""} in your library</p>
         </div>
-        <button onClick={fetchDocuments} style={{ background: "none", border: "1px solid #2a2a3a", borderRadius: 8, padding: "8px 14px", color: "#9090aa", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+        <button onClick={fetchDocuments} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 14px", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
           <RefreshCw size={14} /> Refresh
         </button>
       </div>
 
       {/* Upload Zone */}
-      <div {...getRootProps()} className={`upload-zone ${isDragActive ? "active" : ""}`} style={{ padding: 48, textAlign: "center", cursor: "pointer", marginBottom: 32 }}>
+      <div {...getRootProps()} className={`drop-zone ${isDragActive ? "drag" : ""}`} style={{ padding: 48, textAlign: "center", cursor: "pointer", marginBottom: 32 }}>
         <input {...getInputProps()} />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 56, height: 56, borderRadius: 16, background: isDragActive ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.04)", border: "1px solid #2a2a3a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {uploading ? <Loader size={24} color="#6366f1" style={{ animation: "spin 1s linear infinite" }} /> : <Upload size={24} color={isDragActive ? "#6366f1" : "#5a5a72"} />}
+          <div style={{ width: 56, height: 56, borderRadius: 16, background: isDragActive ? "rgba(13,148,136,0.1)" : "var(--cream-2)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {uploading ? <Loader size={24} color="var(--teal-600)" style={{ animation: "spin-fast 1s linear infinite" }} /> : <Upload size={24} color={isDragActive ? "var(--teal-600)" : "var(--navy-500)"} />}
           </div>
           <div>
-            <p style={{ fontWeight: 600, color: isDragActive ? "#6366f1" : "#e8e8f0", marginBottom: 4 }}>
+            <p style={{ fontWeight: 600, color: isDragActive ? "var(--teal-600)" : "var(--text-primary)", marginBottom: 4 }}>
               {uploading ? "Uploading..." : isDragActive ? "Drop files here" : "Drag & drop files here"}
             </p>
-            <p style={{ fontSize: 13, color: "#5a5a72" }}>PDF, DOCX, TXT — up to 50MB each</p>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>PDF, DOCX, TXT — up to 50MB each</p>
           </div>
           {!uploading && <button className="btn-primary" style={{ fontSize: 13, padding: "8px 18px" }}>Browse Files</button>}
         </div>
@@ -114,11 +114,11 @@ export default function DocumentsPage() {
 
       {/* Document List */}
       {loading ? (
-        <div style={{ textAlign: "center", padding: 48, color: "#5a5a72" }}>Loading documents...</div>
+        <div style={{ textAlign: "center", padding: 48, color: "var(--text-secondary)" }}>Loading documents...</div>
       ) : documents.length === 0 ? (
         <div style={{ textAlign: "center", padding: 64 }}>
-          <FileText size={48} style={{ color: "#2a2a3a", margin: "0 auto 16px" }} />
-          <p style={{ color: "#5a5a72", fontSize: 16 }}>No documents yet. Upload your first one!</p>
+          <FileText size={48} style={{ color: "var(--navy-300)", margin: "0 auto 16px" }} />
+          <p style={{ color: "var(--text-secondary)", fontSize: 16 }}>No documents yet. Upload your first one!</p>
         </div>
       ) : (
         <AnimatePresence>
@@ -126,13 +126,13 @@ export default function DocumentsPage() {
             {documents.map((doc, i) => {
               const sc = statusConfig[doc.status] || statusConfig.uploaded;
               return (
-                <motion.div key={doc.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ delay: i * 0.05 }} className="glass-card" style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <FileText size={20} color="#6366f1" />
+                <motion.div key={doc.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ delay: i * 0.05 }} className="glass" style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(13,148,136,0.08)", border: "1px solid rgba(13,148,136,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <FileText size={20} color="var(--teal-600)" />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600, marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{doc.original_filename}</div>
-                    <div style={{ display: "flex", gap: 16, fontSize: 12, color: "#5a5a72" }}>
+                    <div style={{ display: "flex", gap: 16, fontSize: 12, color: "var(--text-secondary)" }}>
                       <span>{formatSize(doc.file_size)}</span>
                       {doc.chunk_count > 0 && <span>{doc.chunk_count} chunks</span>}
                       <span>{new Date(doc.created_at).toLocaleDateString()}</span>
@@ -141,7 +141,7 @@ export default function DocumentsPage() {
                   <div className={sc.cls} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 6 }}>
                     {sc.icon} {sc.label}
                   </div>
-                  <button onClick={() => deleteDocument(doc.id, doc.original_filename)} style={{ background: "none", border: "none", cursor: "pointer", color: "#5a5a72", padding: 6, borderRadius: 6, transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = "#ef4444")} onMouseLeave={e => (e.currentTarget.style.color = "#5a5a72")}>
+                  <button onClick={() => deleteDocument(doc.id, doc.original_filename)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--navy-500)", padding: 6, borderRadius: 6, transition: "color 0.2s" }} onMouseEnter={e => (e.currentTarget.style.color = "#ef4444")} onMouseLeave={e => (e.currentTarget.style.color = "var(--navy-500)")}>
                     <Trash2 size={16} />
                   </button>
                 </motion.div>

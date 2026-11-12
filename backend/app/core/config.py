@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     # Application
     app_name: str = "DocuMind AI"
     app_version: str = "1.0.0"
-    debug: bool = True
+    debug: bool = False
     secret_key: str = "change-me-in-production"
 
     # Database (SQLite by default — no setup needed!)

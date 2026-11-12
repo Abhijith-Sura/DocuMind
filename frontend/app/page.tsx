@@ -12,6 +12,8 @@ import {
 const RAGScene3D = dynamic(() => import("@/components/RAGScene3D"), { ssr: false });
 const SplashScreen = dynamic(() => import("@/components/SplashScreen"), { ssr: false });
 
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 /* ═══════════════════════════════════════════════════
    LANDING PAGE — DocuMind AI
    Custom logo · Splash screen · 3D bg · Mobile-first
@@ -41,7 +43,11 @@ function Magnetic({ children }: { children: React.ReactNode }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   return (
     <div ref={ref}
-      onMouseMove={e => { const r = ref.current!.getBoundingClientRect(); setPos({ x: (e.clientX - r.left - r.width / 2) * 0.22, y: (e.clientY - r.top - r.height / 2) * 0.22 }); }}
+      onMouseMove={e => {
+        if (!ref.current) return;
+        const r = ref.current.getBoundingClientRect();
+        setPos({ x: (e.clientX - r.left - r.width / 2) * 0.22, y: (e.clientY - r.top - r.height / 2) * 0.22 });
+      }}
       onMouseLeave={() => setPos({ x: 0, y: 0 })}
       style={{ display: "inline-block" }}>
       <motion.div animate={pos} transition={{ type: "spring", stiffness: 200, damping: 15 }}>
@@ -72,7 +78,11 @@ function Eyebrow({ text }: { text: string }) {
 /* ── NAV ───────────────────────────────────────── */
 function Nav() {
   const [s, setS] = useState(false);
-  useEffect(() => { const fn = () => setS(scrollY > 30); addEventListener("scroll", fn); return () => removeEventListener("scroll", fn); }, []);
+  useEffect(() => {
+    const fn = () => setS(window.scrollY > 30);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
   return (
     <nav className={`nav-root ${s ? "scrolled" : ""}`}>
       <Link href="/" style={{ textDecoration: "none" }}>
@@ -132,7 +142,7 @@ function Hero() {
               Start free — no card needed <ArrowRight size={16} />
             </Link>
           </Magnetic>
-          <a href="http://localhost:8000/docs" target="_blank" rel="noreferrer" className="btn-outline hero-cta-secondary">
+          <a href={`${API}/docs`} target="_blank" rel="noreferrer" className="btn-outline hero-cta-secondary">
             <Play size={14} /> API Docs
           </a>
         </motion.div>

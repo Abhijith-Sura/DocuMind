@@ -68,10 +68,14 @@ class DocumentEmbedder:
     def embed_query(self, query: str) -> List[float]:
         """
         Embed a single query string.
-        BGE models recommend a query prefix for better retrieval.
+        Applies BGE query instruction prefix when using BGE retrieval models.
         """
-        # BGE-M3 specific: prefix improves retrieval quality
-        prefixed_query = f"Represent this sentence: {query}"
+        model_name = settings.embedding_model.lower()
+        if "bge-" in model_name and "bge-m3" not in model_name:
+            prefixed_query = f"Represent this sentence for searching relevant passages: {query}"
+        else:
+            prefixed_query = query
+
         embedding = self.model.encode(
             prefixed_query,
             normalize_embeddings=True,

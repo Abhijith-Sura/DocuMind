@@ -58,7 +58,12 @@ def process_document_task(self, document_id: int, file_path: str):
     import mlflow
 
     # Use sync engine for Celery (not async)
-    sync_db_url = settings.database_url.replace("+asyncpg", "+psycopg2")
+    # Handle both SQLite (aiosqlite→pysqlite) and PostgreSQL (asyncpg→psycopg2)
+    sync_db_url = settings.database_url
+    if "+aiosqlite" in sync_db_url:
+        sync_db_url = sync_db_url.replace("+aiosqlite", "")
+    elif "+asyncpg" in sync_db_url:
+        sync_db_url = sync_db_url.replace("+asyncpg", "+psycopg2")
     engine = create_engine(sync_db_url)
     Session = sessionmaker(bind=engine)
     db = Session()

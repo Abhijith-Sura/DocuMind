@@ -42,6 +42,8 @@ class DocumentParser:
         elif suffix in {".txt", ".md"}:
             return self._parse_text(file_path)
 
+        return []  # Unreachable given the check above, but satisfies type checkers
+
     def _parse_pdf(self, file_path: str) -> List[ParsedPage]:
         """Parse PDF using pypdf — works on Windows without Visual Studio."""
         from pypdf import PdfReader

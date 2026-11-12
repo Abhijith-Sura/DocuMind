@@ -85,10 +85,10 @@ export default function ChatPage() {
   return (
     <div style={{ display: "flex", height: "100vh", flexDirection: "column" }}>
       {/* Header */}
-      <div style={{ borderBottom: "1px solid #1e1e2a", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16 }}>
+      <div style={{ borderBottom: "1px solid var(--border)", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 800 }}>Chat</h1>
-          <p style={{ color: "#9090aa", fontSize: 13 }}>Ask questions with cited answers</p>
+          <p style={{ color: "var(--text-muted)", fontSize: 13 }}>Ask questions with cited answers</p>
         </div>
         <div style={{ marginLeft: "auto", position: "relative" }}>
           <select
@@ -100,14 +100,14 @@ export default function ChatPage() {
             <option value="">— Select a document —</option>
             {documents.map(d => <option key={d.id} value={d.id}>{d.original_filename}</option>)}
           </select>
-          <ChevronDown size={14} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", color: "#5a5a72", pointerEvents: "none" }} />
+          <ChevronDown size={14} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", color: "var(--navy-500)", pointerEvents: "none" }} />
         </div>
       </div>
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: "24px 32px", display: "flex", flexDirection: "column", gap: 20 }}>
         {messages.length === 0 && (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, color: "#5a5a72" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, color: "var(--text-secondary)" }}>
             <Bot size={48} />
             <p style={{ fontSize: 16 }}>{selectedDoc ? `Ask anything about "${selectedDoc.original_filename}"` : "Select a document to start chatting"}</p>
           </div>
@@ -118,11 +118,11 @@ export default function ChatPage() {
             <motion.div key={msg.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{ display: "flex", flexDirection: "column", alignItems: msg.role === "user" ? "flex-end" : "flex-start", gap: 8 }}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 10, maxWidth: "85%", flexDirection: msg.role === "user" ? "row-reverse" : "row" }}>
                 {/* Avatar */}
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: msg.role === "user" ? "linear-gradient(135deg,#6366f1,#4f46e5)" : "#1e1e2a", border: "1px solid #2a2a3a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  {msg.role === "user" ? <User size={16} color="white" /> : <Bot size={16} color="#6366f1" />}
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: msg.role === "user" ? "var(--grad-accent)" : "var(--cream-2)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {msg.role === "user" ? <User size={16} color="white" /> : <Bot size={16} color="var(--teal-600)" />}
                 </div>
 
-                <div className={msg.role === "user" ? "chat-user" : "chat-ai"} style={{ flex: 1 }}>
+                <div className={msg.role === "user" ? "bubble-user" : "bubble-ai"} style={{ flex: 1 }}>
                   <p style={{ lineHeight: 1.7, fontSize: 14, whiteSpace: "pre-wrap" }}>{msg.content}</p>
 
                   {/* Citations */}
@@ -161,17 +161,17 @@ export default function ChatPage() {
                   {msg.metrics && (
                     <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                       {[
-                        { label: `${msg.metrics.retrieved}→${msg.metrics.reranked} chunks`, color: "#9090aa" },
-                        { label: `${Math.round(msg.metrics.retrieval_ms)}ms retrieval`, color: "#9090aa" },
-                        { label: `${Math.round(msg.metrics.generation_ms)}ms generation`, color: "#9090aa" },
+                        { label: `${msg.metrics.retrieved}→${msg.metrics.reranked} chunks`, color: "var(--text-muted)" },
+                        { label: `${Math.round(msg.metrics.retrieval_ms)}ms retrieval`, color: "var(--text-muted)" },
+                        { label: `${Math.round(msg.metrics.generation_ms)}ms generation`, color: "var(--text-muted)" },
                       ].map((m, i) => (
-                        <span key={i} style={{ fontSize: 11, color: m.color, background: "rgba(255,255,255,0.04)", padding: "2px 8px", borderRadius: 4, border: "1px solid #2a2a3a" }}>{m.label}</span>
+                        <span key={i} style={{ fontSize: 11, color: m.color, background: "var(--cream-2)", padding: "2px 8px", borderRadius: 4, border: "1px solid var(--border)" }}>{m.label}</span>
                       ))}
                       {msg.queryLogId && !msg.rating && (
                         <div style={{ display: "flex", gap: 3, marginLeft: 4 }}>
                           {[1, 2, 3, 4, 5].map(r => (
                             <button key={r} onClick={() => rateMessage(msg.queryLogId!, r, msg.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 1 }}>
-                              <Star size={13} color={r <= (msg.rating || 0) ? "#f59e0b" : "#2a2a3a"} fill={r <= (msg.rating || 0) ? "#f59e0b" : "none"} />
+                              <Star size={13} color={r <= (msg.rating || 0) ? "#f59e0b" : "var(--navy-300)"} fill={r <= (msg.rating || 0) ? "#f59e0b" : "none"} />
                             </button>
                           ))}
                         </div>
@@ -187,11 +187,11 @@ export default function ChatPage() {
 
         {loading && (
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#1e1e2a", border: "1px solid #2a2a3a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Bot size={16} color="#6366f1" />
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--cream-2)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Bot size={16} color="var(--teal-600)" />
             </div>
-            <div className="chat-ai" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              {[0, 1, 2].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: "#6366f1", animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />)}
+            <div className="bubble-ai" style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              {[0, 1, 2].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--teal-500)", animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />)}
             </div>
           </div>
         )}
@@ -200,7 +200,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div style={{ borderTop: "1px solid #1e1e2a", padding: "16px 32px" }}>
+      <div style={{ borderTop: "1px solid var(--border)", padding: "16px 32px" }}>
         <div style={{ display: "flex", gap: 12, alignItems: "flex-end", maxWidth: 900, margin: "0 auto" }}>
           <textarea
             className="input-field"
@@ -221,7 +221,7 @@ export default function ChatPage() {
             {loading ? <Loader size={18} style={{ animation: "spin 1s linear infinite" }} /> : <Send size={18} />}
           </button>
         </div>
-        <p style={{ textAlign: "center", fontSize: 12, color: "#5a5a72", marginTop: 8 }}>Enter to send · Shift+Enter for new line</p>
+        <p style={{ textAlign: "center", fontSize: 12, color: "var(--text-secondary)", marginTop: 8 }}>Enter to send · Shift+Enter for new line</p>
       </div>
 
       <style>{`

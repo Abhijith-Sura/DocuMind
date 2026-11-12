@@ -95,12 +95,16 @@ class HybridSearcher:
         # Get top-k indices
         top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:top_k]
 
-        # Map BM25 results to RetrievedChunk format using semantic results as reference
+        # Build lookup from semantic results for metadata reuse
         semantic_by_index = {r.chunk_index: r for r in semantic_results}
         bm25_results = []
 
         for rank, idx in enumerate(top_indices):
+            if scores[idx] <= 0:
+                continue  # Skip zero-score results
+
             if idx in semantic_by_index:
+                # Reuse metadata from semantic results
                 chunk = semantic_by_index[idx]
                 bm25_results.append(RetrievedChunk(
                     text=chunk.text,
@@ -110,6 +114,17 @@ class HybridSearcher:
                     chunk_index=idx,
                     document_id=chunk.document_id,
                     metadata=chunk.metadata,
+                ))
+            else:
+                # BM25-only hit — construct from chunks_texts
+                bm25_results.append(RetrievedChunk(
+                    text=chunks_texts[idx],
+                    score=float(scores[idx]),
+                    page_number=0,
+                    source="",
+                    chunk_index=idx,
+                    document_id=document_id,
+                    metadata={},
                 ))
 
         return bm25_results

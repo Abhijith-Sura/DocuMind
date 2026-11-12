@@ -59,12 +59,27 @@ export default function DashboardOverview() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    axios.get(`${API}/api/v1/documents`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => {
-        const docs = res.data;
-        setStats({ documents: docs.length, queries: Math.round(docs.length * 4.2), avg_score: 0.87, processing: docs.filter((d: any) => d.status === "processing").length });
-      })
-      .catch(() => setStats({ documents: 3, queries: 12, avg_score: 0.87, processing: 0 }));
+    const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
+
+    Promise.allSettled([
+      axios.get(`${API}/api/v1/documents`, authHeaders),
+      axios.get(`${API}/api/v1/evaluation/dashboard`, authHeaders),
+    ]).then(([docsRes, evalRes]) => {
+      const docs = docsRes.status === "fulfilled" ? docsRes.value.data : [];
+      const evalData = evalRes.status === "fulfilled" ? evalRes.value.data?.summary : null;
+
+      const docCount = Array.isArray(docs) ? docs.length : 0;
+      const processingCount = Array.isArray(docs) ? docs.filter((d: any) => d.status === "processing").length : 0;
+      const queryCount = evalData?.total_queries ?? 0;
+      const avgScore = evalData?.avg_faithfulness ?? 0;
+
+      setStats({
+        documents: docCount,
+        queries: queryCount,
+        avg_score: avgScore,
+        processing: processingCount,
+      });
+    });
   }, []);
 
   const METRICS = [

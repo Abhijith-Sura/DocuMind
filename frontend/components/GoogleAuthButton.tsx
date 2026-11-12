@@ -57,9 +57,15 @@ export default function GoogleAuthButton({
   };
 
   const googleBtnRef = useRef<HTMLDivElement>(null);
+  const handleCredentialResponseRef = useRef(handleCredentialResponse);
+  handleCredentialResponseRef.current = handleCredentialResponse;
 
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) return;
+
+    let timer: NodeJS.Timeout | null = null;
+    let attempts = 0;
+    const maxAttempts = 30; // 6 seconds max
 
     const initGsi = () => {
       if (window.google?.accounts?.id) {
@@ -68,7 +74,7 @@ export default function GoogleAuthButton({
             client_id: GOOGLE_CLIENT_ID,
             callback: (response: any) => {
               if (response.credential) {
-                handleCredentialResponse(response.credential);
+                handleCredentialResponseRef.current(response.credential);
               }
             },
             auto_select: false,
@@ -91,13 +97,18 @@ export default function GoogleAuthButton({
         } catch (err) {
           console.warn("Google GSI initialization warning:", err);
         }
-      } else {
-        setTimeout(initGsi, 200);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        timer = setTimeout(initGsi, 200);
       }
     };
 
     initGsi();
-  }, [GOOGLE_CLIENT_ID, label]);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [label]);
 
   const handleClick = () => {
     if (loading) return;
